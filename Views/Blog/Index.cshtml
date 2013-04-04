@@ -19,23 +19,91 @@
         </div>
     </section>
 }
-<h3>The techologies that I plan to use:</h3>
-<ol class="round">
-    <li class="one">
-        <h5>ASP.NET MVC</h5>
-        I have used spent most of my professional life working with the Microsoft stack.
-        But there are always some new areas to explore...
-    </li>
 
-    <li class="two">
-        <h5>Twitters Boostrap</h5>
-        Smart/pretty designs is not what I am best at, by using Boostrap I hope I can
-        make a fairly decent looking site.
-    </li>
+<section class="postSummary well">
+    <h2>HTML minification</h2>
+    <span class="right">04-04-2013</span>
+    <p>The other day I saw a talk by Mads Kristensen at DCC2013 in Horsens, Denmark about website optimization. In this talk
+        Mads mentioned minification of HTML, but he also said to use it with care. Doing HTML minification is not easy and
+        it can cause some problems, Mads said something along the lines of this: "If you want to use it, you should use 
+        it from the beginning of your project. If you add it to an existing project you can get into a lot trouble". So I
+        thouhgt I would add it to my blog now in the beginning of my project.
+    </p>
+    <p>
+        Here is what I did to add HTML minification to my ASP.NET MVC4 project:
+    </p>
+    <ul>
+        <li>
+            I found the <a href="http://madskristensen.net/post/A-whitespace-removal-HTTP-module-for-ASPNET-20.aspx">WhitespaceModule</a> on 
+            <a href="http://madskristensen.net/">Mads Kristensens blog</a> and downloaded the zip file.
+        </li>
+        <li>
+            Then I added the WhitespaceModule.cs file from the zip file to my MVC product in the App_Start folder.
+        </li>
+        <li>
+            Then I added the following two snippets to my web.config file:<br />
+            <code>
+                &lt;system.web&gt;<br />
+                &lt;modules runAllManagedModulesForAllRequests="true"&gt;<br />
+                    &lt;add type="WhitespaceModule" name="WhitespaceModule"/&gt;<br />
+                &lt;/modules&gt;<br />
+                ...<br />
+            </code>
+            <p>and</p>
+            <code>&lt;system.webServer&gt;<br />
+                &lt;modules runAllManagedModulesForAllRequests="true"&gt;<br />
+                    &lt;add type="WhitespaceModule" name="WhitespaceModule"/&gt;<br />
+                &lt;/modules&gt;<br />
+                ...<br />
+            </code>
+        </li>
+        <li>
+            When skimming through the implementation of the WhitespaceModule I noticed the following
+            line: <code>if (app.Request.RawUrl.Contains(".aspx"))</code>
+            With this line it would only work in an ASP.NET Forms site, so I changed it to the following
+            to make it work with MVC: <code>if (app.Request.RawUrl.EndsWith("/"))</code>
+        </li>
+        <li>
+            Then I was ready to try it out. When looking at the HTML in "view source" in a browser, 
+            I noticed that it looked pretty good and minified ;-), but I also noticed
+            that it still contains HTML comments.
+        </li>
+        <li>
+            I am not a big wiz on regular expression, but by Googling a little around I added the following
+            two lines to the WhitespaceModule:
+            Just after the definition of the existing RegEx variable I added another one: <code>private static Regex commentReg = new Regex("<!--*.*?-->");</code>
+            In the Write method just af the usage of the existing RegEx variable I added this line: <code>html = commentReg.Replace(html, string.Empty);</code>
+        </li>
+        <li>
+            Then I took another look at the HTML in "view source" in a browser, and it worked :-)
+        </li>
+    </ul>
+    <p>So now it is inplace. We will if it will cause me any problems in the future.</p>
+</section>
 
-    <li class="three">
-        <h5>RavenDB</h5>
-        RavenDB makes it possible to store my domain objects directly into the database.
-        This will save me from writing a lot of boring code for a mapping layer.
-    </li>
-</ol>
+<section class="postSummary well">
+    <h2>Welcome to my new blog.</h2>
+    <span class="right">03-04-2013</span>
+    <p>
+        These are techologies that I plan to use to build my new blog.
+    </p>
+    <ol class="round">
+        <li class="one">
+            <h5>ASP.NET MVC</h5>
+            I have used spent most of my professional life working with the Microsoft stack.
+            But there are always some new areas to explore...
+        </li>
+
+        <li class="two">
+            <h5>Twitters Boostrap</h5>
+            Smart/pretty designs is not what I am best at, by using Boostrap I hope I can
+            make a fairly decent looking site.
+        </li>
+
+        <li class="three">
+            <h5>RavenDB</h5>
+            RavenDB makes it possible to store my domain objects directly into the database.
+            This will save me from writing a lot of boring code for a mapping layer.
+        </li>
+    </ol>
+</section>
