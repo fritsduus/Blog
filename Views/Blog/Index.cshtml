@@ -44,16 +44,16 @@
             Then I added the following two snippets to my web.config file:<br />
             <code>
                 &lt;system.web&gt;<br />
-                &lt;modules runAllManagedModulesForAllRequests="true"&gt;<br />
-                    &lt;add type="WhitespaceModule" name="WhitespaceModule"/&gt;<br />
-                &lt;/modules&gt;<br />
+                &nbsp;&nbsp;&lt;modules runAllManagedModulesForAllRequests="true"&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;add type="WhitespaceModule" name="WhitespaceModule"/&gt;<br />
+                &nbsp;&nbsp;&lt;/modules&gt;<br />
                 ...<br />
             </code>
             <p>and</p>
             <code>&lt;system.webServer&gt;<br />
-                &lt;modules runAllManagedModulesForAllRequests="true"&gt;<br />
-                    &lt;add type="WhitespaceModule" name="WhitespaceModule"/&gt;<br />
-                &lt;/modules&gt;<br />
+                &nbsp;&nbsp;&lt;modules runAllManagedModulesForAllRequests="true"&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;add type="WhitespaceModule" name="WhitespaceModule"/&gt;<br />
+                &nbsp;&nbsp;&lt;/modules&gt;<br />
                 ...<br />
             </code>
         </li>
@@ -71,14 +71,14 @@
         <li>
             I am not a big wiz on regular expression, but by Googling a little around I added the following
             two lines to the WhitespaceModule:
-            Just after the definition of the existing RegEx variable I added another one: <code>private static Regex commentReg = new Regex("<!--*.*?-->");</code>
+            Just after the definition of the existing RegEx variable I added another one: <code>private static Regex commentReg = new Regex("&lt;!--*.*?--&gt;");</code>
             In the Write method just af the usage of the existing RegEx variable I added this line: <code>html = commentReg.Replace(html, string.Empty);</code>
         </li>
         <li>
-            Then I took another look at the HTML in "view source" in a browser, and it worked :-)
+            I then took another look at the HTML in "view source" in a browser, and it worked :-)
         </li>
     </ul>
-    <p>So now it is inplace. We will if it will cause me any problems in the future.</p>
+    <p>So now it is inplace. We will see if it causes me any problems in the future.</p>
 </section>
 
 <section class="postSummary well">
