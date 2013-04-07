@@ -2,8 +2,8 @@
     ViewBag.Title = "";
 }
 @section featured {
-    <section class="featured">
-        <div class="content-wrapper">
+    <section class="hero-unit">
+@*        <div class="content-wrapper">*@
             <hgroup class="title">
                 <h1>@ViewBag.Title</h1>
                 <h2>@ViewBag.Message</h2>
@@ -16,13 +16,97 @@
             <p>
                 Stay tuned and see how it evolves...
             </p>
-        </div>
+@*        </div>*@
     </section>
 }
 
-<section class="postSummary well">
-    <h2>HTML minification</h2>
-    <span class="right">04-04-2013</span>
+<div class="postSummary well">
+    <div class="row-fluid">
+        <div class="span9">
+            <h2>HTML minification part 2</h2>
+        </div>
+        <div class="span3 text-right">
+            <p>07-04-2013</p>
+            <span class="label label-info">ASP.NET</span>
+            <span class="label label-info">Web performance</span>
+        </div>
+    </div>
+    <p>
+        A few days ago I wrote a post about HTML minification. If you haven't read it, go and read it before reading this one.
+    </p>
+    <p>
+        Well it turned out that Mads Kristensen was right about HTML minification being dangerous. After enabling compression, by
+        adding the following line to my web.config:</p>
+        <code>&lt;system.webServer&gt;<br />
+        &nbsp;&nbsp;...<br />
+        &nbsp;&nbsp;&lt;urlCompression doDynamicCompression="true" doStaticCompression="true" dynamicCompressionBeforeCache="true"/&gt;
+        </code>
+    <p>
+        I started getting some really strange looking HTML. So I tried to disable the <code>WhitespaceModule</code> and then all the problems were
+        gone. But I wasn't ready to give up on the HTML minification yet, so I reenabled it and started debugging and Googling around.</p>
+    <p>
+        The problem was in the <code>WhitespaceFilter.Write</code> method were the code was trying to make a string directly out of a gzipped 
+        byte array. So the regular expressions where running on a very strange looking string which would create some unpredictable results.
+        I then made an inital new version of the Write method that verified if the current page was gzipped looking something like this:<br />
+        <code>
+            if (HttpContext.Current.Response.Headers["Content-Encoding"] == "gzip")<br />
+            {<br />
+            &nbsp;&nbsp;using (Stream s = new MemoryStream(data))<br />
+            &nbsp;&nbsp;{<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;using (GZipStream zipStream = new GZipStream(s, CompressionMode.Decompress))<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;{<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte[] tempBytes = new byte[4 * 4096];<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int nRead = zipStream.Read(tempBytes, 0, 4 * 4096);<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;html = HttpContext.Current.Response.ContentEncoding.GetString(tempBytes);<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br />
+            &nbsp;&nbsp;}<br />
+            }<br />
+        </code>
+        If the page was zipped this code will unzip it before creating the HTML string. I also wrote a few lines that would 
+        gzip the resulting HTML before writing it back into the Stream, like this:<br />
+        <code>
+            if (HttpContext.Current.Response.Headers["Content-Encoding"] == "gzip")<br />
+            {<br />
+            &nbsp;&nbsp;using (GZipStream zipStream = new GZipStream(_sink, CompressionMode.Compress))<br />
+            &nbsp;&nbsp;{<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;byte[] outdata = HttpContext.Current.Response.ContentEncoding.GetBytes(html2);<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;zipStream.Write(outdata, 0, outdata.GetLength(0));<br />
+            &nbsp;&nbsp;}<br />
+            }<br />
+            else<br />
+            {<br />
+            &nbsp;&nbsp;byte[] outdata = System.Text.Encoding.Default.GetBytes(html2);<br />
+            &nbsp;&nbsp;_sink.Write(outdata, 0, outdata.GetLength(0));<br />
+            }<br />
+        </code>
+    </p>
+    <p>
+        Now my HTML minification was working againg... The above code was not my final code as there is a problem with the
+        hardcoded size of the <code>tempBytes</code> byte array. Furthermore when looking around to find a solution to the
+        above problem I also found people describing another problem with my current code: For larger HTML pages the 
+        <code>WhitespaceFilter.Write</code> will be called multiple times each with a part of the total page. I wrote a 
+        couple of classes that helped me solve this problem and the problem with the hard coded size of the byte array. I hope 
+        to find time to write about them in a future post.
+    </p>
+    <p>
+        There is another optimization that could be made here but I am not really sure how to do it... anyway it seems rather
+        silly that the HTML is first gzipped, then unzipped and minified, before it is gzipped again. If I could find a way
+        to disable gzipping of just HTML, then I could skip the unzip step in the above code as well and just gzip the result.
+        Perhaps I will make a future blog post about that also if I figure out how.
+    </p>
+</div>
+
+<div class="postSummary well">
+    <div class="row-fluid">
+        <div class="span9">
+            <h2>HTML minification</h2>
+        </div>
+        <div class="span3 text-right">
+            <p>04-04-2013</p>
+            <span class="label label-info">ASP.NET</span>
+            <span class="label label-info">Web performance</span>
+        </div>
+    </div>
     <p>The other day I saw a talk by Mads Kristensen at DCC2013 in Horsens, Denmark about website optimization. In this talk
         Mads mentioned minification of HTML, but he also said to use it with care. Doing HTML minification is not easy and
         it can cause some problems, Mads said something along the lines of this: "If you want to use it, you should use 
@@ -79,11 +163,23 @@
         </li>
     </ul>
     <p>So now it is inplace. We will see if it causes me any problems in the future.</p>
-</section>
+    <p>Update: Well it only took a few days before I ran into problems read about how 
+        I solved it here: HTML Minification part 2
+    </p>
+</div>
 
-<section class="postSummary well">
-    <h2>Welcome to my new blog.</h2>
-    <span class="right">03-04-2013</span>
+<div class="postSummary well">
+    <div class="row-fluid">
+        <div class="span9">
+            <h2>Welcome to my new blog.</h2>
+        </div>
+        <div class="span3 text-right">
+            <p>03-04-2013</p>
+            <span class="label label-info">ASP.NET</span>
+            <span class="label label-info">Bootstrap</span>
+            <span class="label label-info">RavenDB</span>
+        </div>
+    </div>
     <p>
         These are techologies that I plan to use to build my new blog.
     </p>
@@ -106,4 +202,4 @@
             This will save me from writing a lot of boring code for a mapping layer.
         </li>
     </ol>
-</section>
+</div>
