@@ -1,6 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Blog.Models;
+<!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>Frits Duus - @ViewBag.Title</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,7 @@
 
     <!-- Le styles -->
     @Styles.Render("~/Content/themes/base/css", "~/Content/css")
-@*    <link href="~/Content/bootstrap.min.css" rel="stylesheet">
+    @*    <link href="~/Content/bootstrap.min.css" rel="stylesheet">
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -28,31 +29,34 @@
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="~/Content/icons/apple-touch-icon-114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="~/Content/icons/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="~/Content/icons/apple-touch-icon-57-precomposed.png">
-  </head>
+</head>
 
-  <body>
-    <h1 class="text-info">Frits Duus</h1>
-    <h2 class="text-info">Pragmatic software development</h2>
-    <div class="navbar navbar-inverse">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-@*          <a class="brand" href="#">Frits Duus' blog</a>*@
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li class="@if (@ViewContext.RouteData.Values["action"].ToString() == "Index") {<text>active</text>}">@Html.ActionLink("Blog", "Index", "Blog")</li>
-              <li class="@if (@ViewContext.RouteData.Values["action"].ToString() == "About") {<text>active</text>}">@Html.ActionLink("About", "About", "Blog")</li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
-
+<body>
     <div class="container-fluid">
+        <h1 class="text-info text-center">Frits Duus</h1>
+        <h2 class="text-info text-center">Pragmatic software development</h2>
+        <div class="navbar navbar-inverse">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    @*          <a class="brand" href="#">Frits Duus' blog</a>*@
+                    <div class="nav-collapse">
+                        <ul class="nav">
+                            <li class="@if (@ViewContext.RouteData.Values["action"].ToString() == "Index")
+                                       {<text>active</text>}">@Html.ActionLink("Blog", "Index", "Blog")</li>
+                            <li class="@if (@ViewContext.RouteData.Values["action"].ToString() == "About")
+                                       {<text>active</text>}">@Html.ActionLink("About", "About", "Blog")</li>
+                        </ul>
+                    </div>
+                    <!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
         <div class="row-fluid">
             <div class="span10">
                 @RenderSection("featured", required: false)
@@ -60,18 +64,23 @@
                 @RenderBody()
             </div>
             <aside class="span2">
-@*                <h3>Aside Title</h3>
-                <p>
+                <h3>Tags</h3>
+                @*                <p>
                     Use this area to provide additional information.
                 </p>*@
                 <ul>
-                    <li>@Html.ActionLink("Blog", "Index", "Blog")</li>
+                    @foreach (TagCount tc in ViewBag.Tags)
+                    {
+                        <li>@Html.ActionLink(tc.DisplayText, "Tag", "Blog", new { TagName = tc.Tag }, null)</li>
+                    }
+                    @*                    <li>@Html.ActionLink("Blog", "Index", "Blog")</li>
                     <li>@Html.ActionLink("About", "About", "Blog")</li>
-@*                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
+                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
                 </ul>
             </aside>
         </div>
-    </div> <!-- /container -->
+    </div>
+    <!-- /container -->
 
     <!-- Le javascript
     ================================================== -->
@@ -80,5 +89,5 @@
     <script src="~/Scripts/bootstrap.min.js"></script>
     @RenderSection("scripts", required: false)
 
-  </body>
+</body>
 </html>
