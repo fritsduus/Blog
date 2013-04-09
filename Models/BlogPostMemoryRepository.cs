@@ -1,0 +1,230 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace Blog.Models
+{
+    public class BlogPostMemoryRepository : IBlogPostRepository
+    {
+        #region Data
+
+        private List<BlogPost> posts = new List<BlogPost>
+        {
+            new BlogPost
+            {
+                Id = "BlogPost/1",
+                Created = new DateTime(2013, 4, 3),
+                Title = "Welcome to my new blog",
+                Tags = new string[] { "ASP.NET", "Boostrap", "RavenDB" },
+                Text = "<p>" +
+                           "These are techologies that I plan to use to build my new blog." +
+                       "</p>" +
+                       "<ol class=\"round\">" +
+                           "<li class=\"one\">" +
+                               "<h5>ASP.NET MVC</h5>" +
+                               "I have used spent most of my professional life working with the Microsoft stack." +
+                               "But there are always some new areas to explore..." +
+                           "</li>" +
+
+                           "<li class=\"two\">" +
+                               "<h5>Twitters Boostrap</h5>" +
+                               "Smart/pretty designs is not what I am best at, by using Boostrap I hope I can" +
+                               "make a fairly decent looking site." +
+                           "</li>" +
+
+                           "<li class=\"three\">" +
+                               "<h5>RavenDB</h5>" +
+                               "RavenDB makes it possible to store my domain objects directly into the database." +
+                               "This will save me from writing a lot of boring code for a mapping layer." +
+                           "</li>" +
+                       "</ol>"
+            },
+            new BlogPost
+            {
+                Id = "BlogPost/2",
+                Created = new DateTime(2013, 4, 4),
+                Title = "HTML minification",
+                Tags = new string[] { "ASP.NET", "Web performance" },
+                Text = "<p>The other day I saw a talk by Mads Kristensen at DCC2013 in Horsens, Denmark about website optimization. In this talk" +
+                           "Mads mentioned minification of HTML, but he also said to use it with care. Doing HTML minification is not easy and" +
+                           "it can cause some problems, Mads said something along the lines of this: \"If you want to use it, you should use " +
+                           "it from the beginning of your project. If you add it to an existing project you can get into a lot trouble\". So I" +
+                           "thouhgt I would add it to my blog now in the beginning of my project." +
+                       "</p>" +
+                       "<p>" +
+                           "Here is what I did to add HTML minification to my ASP.NET MVC4 project:" +
+                       "</p>" +
+                       "<ul>" +
+                           "<li>" +
+                               "I found the <a href=\"http://madskristensen.net/post/A-whitespace-removal-HTTP-module-for-ASPNET-20.aspx\">WhitespaceModule</a> on" + 
+                               "<a href=\"http://madskristensen.net/\">Mads Kristensens blog</a> and downloaded the zip file." +
+                           "</li>" +
+                           "<li>" +
+                               "Then I added the WhitespaceModule.cs file from the zip file to my MVC product in the App_Start folder." +
+                           "</li>" +
+                           "<li>" +
+                               "Then I added the following two snippets to my web.config file:<br />" +
+                               "<code>" +
+                                   "&lt;system.web&gt;<br />" +
+                                   "&nbsp;&nbsp;&lt;modules runAllManagedModulesForAllRequests=\"true\"&gt;<br />" +
+                                   "&nbsp;&nbsp;&nbsp;&nbsp;&lt;add type=\"WhitespaceModule\" name=\"WhitespaceModule\"/&gt;<br />" +
+                                   "&nbsp;&nbsp;&lt;/modules&gt;<br />" +
+                                   "...<br />" +
+                               "</code>" +
+                               "<p>and</p>" +
+                               "<code>&lt;system.webServer&gt;<br />" +
+                                   "&nbsp;&nbsp;&lt;modules runAllManagedModulesForAllRequests=\"true\"&gt;<br />" +
+                                   "&nbsp;&nbsp;&nbsp;&nbsp;&lt;add type=\"WhitespaceModule\" name=\"WhitespaceModule\"/&gt;<br />" +
+                                   "&nbsp;&nbsp;&lt;/modules&gt;<br />" +
+                                   "...<br />" +
+                               "</code>" +
+                           "</li>" +
+                           "<li>" +
+                               "When skimming through the implementation of the WhitespaceModule I noticed the following" +
+                               "line: <code>if (app.Request.RawUrl.Contains(\".aspx\"))</code>" +
+                               "With this line it would only work in an ASP.NET Forms site, so I changed it to the following" +
+                               "to make it work with MVC: <code>if (app.Request.RawUrl.EndsWith(\"/\"))</code>" +
+                           "</li>" +
+                           "<li>" +
+                               "Then I was ready to try it out. When looking at the HTML in \"view source\" in a browser, " +
+                               "I noticed that it looked pretty good and minified ;-), but I also noticed" +
+                               "that it still contains HTML comments." +
+                           "</li>" +
+                           "<li>" +
+                               "I am not a big wiz on regular expression, but by Googling a little around I added the following" +
+                               "two lines to the WhitespaceModule:" +
+                               "Just after the definition of the existing RegEx variable I added another one: <code>private static Regex commentReg = new Regex(\"&lt;!--*.*?--&gt;\");</code>" +
+                               "In the Write method just af the usage of the existing RegEx variable I added this line: <code>html = commentReg.Replace(html, string.Empty);</code>" +
+                           "</li>" +
+                           "<li>" +
+                               "I then took another look at the HTML in \"view source\" in a browser, and it worked :-)" +
+                           "</li>" +
+                        "</ul>" +
+                        "<p>So now it is inplace. We will see if it causes me any problems in the future.</p>" +
+                        "<p>Update: Well it only took a few days before I ran into problems read about how " +
+                            "I solved it here: HTML Minification part 2" +
+                        "</p>"
+            },
+            new BlogPost
+            {
+                Id = "BlogPost/3",
+                Created = new DateTime(2013, 4, 7),
+                Title = "HTML minification 2",
+                Tags = new string[] { "ASP.NET", "Web performance" },
+                Text = "<p>" +
+                           "A few days ago I wrote a post about HTML minification. If you haven't read it, go and read it before reading this one." +
+                        "</p>" +
+                        "<p>" +
+                           "Well it turned out that Mads Kristensen was right about HTML minification being dangerous. After enabling compression, by" +
+                           "adding the following line to my web.config:</p>" +
+                        "<code>&lt;system.webServer&gt;<br />" +
+                            "&nbsp;&nbsp;...<br />" +
+                            "&nbsp;&nbsp;&lt;urlCompression doDynamicCompression=\"true\" doStaticCompression=\"true\" dynamicCompressionBeforeCache=\"true\"/&gt;" +
+                        "</code>" +
+                        "<p>" +
+                            "I started getting some really strange looking HTML. So I tried to disable the <code>WhitespaceModule</code> and then all the problems were" +
+                            "gone. But I wasn't ready to give up on the HTML minification yet, so I reenabled it and started debugging and Googling around.</p>" +
+                        "<p>" +
+                           "The problem was in the <code>WhitespaceFilter.Write</code> method were the code was trying to make a string directly out of a gzipped " +
+                           "byte array. So the regular expressions where running on a very strange looking string which would create some unpredictable results." +
+                           "I then made an inital new version of the Write method that verified if the current page was gzipped looking something like this:<br />" +
+                           "<code>" +
+                               "if (HttpContext.Current.Response.Headers[\"Content-Encoding\"] == \"gzip\")<br />" +
+                               "{<br />" +
+                               "&nbsp;&nbsp;using (Stream s = new MemoryStream(data))<br />" +
+                               "&nbsp;&nbsp;{<br />" +
+                               "&nbsp;&nbsp;&nbsp;&nbsp;using (GZipStream zipStream = new GZipStream(s, CompressionMode.Decompress))<br />" +
+                               "&nbsp;&nbsp;&nbsp;&nbsp;{<br />" +
+                               "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;byte[] tempBytes = new byte[4 * 4096];<br />" +
+                               "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;int nRead = zipStream.Read(tempBytes, 0, 4 * 4096);<br />" +
+                               "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;html = HttpContext.Current.Response.ContentEncoding.GetString(tempBytes);<br />" +
+                               "&nbsp;&nbsp;&nbsp;&nbsp;}<br />" +
+                               "&nbsp;&nbsp;}<br />" +
+                               "}<br />" +
+                           "</code>" +
+                           "If the page was zipped this code will unzip it before creating the HTML string. I also wrote a few lines that would " +
+                           "gzip the resulting HTML before writing it back into the Stream, like this:<br />" +
+                           "<code>" +
+                               "if (HttpContext.Current.Response.Headers[\"Content-Encoding\"] == \"gzip\")<br />" +
+                               "{<br />" +
+                               "&nbsp;&nbsp;using (GZipStream zipStream = new GZipStream(_sink, CompressionMode.Compress))<br />" +
+                               "&nbsp;&nbsp;{<br />" +
+                               "&nbsp;&nbsp;&nbsp;&nbsp;byte[] outdata = HttpContext.Current.Response.ContentEncoding.GetBytes(html2);<br />" +
+                               "&nbsp;&nbsp;&nbsp;&nbsp;zipStream.Write(outdata, 0, outdata.GetLength(0));<br />" +
+                               "&nbsp;&nbsp;}<br />" +
+                               "}<br />" +
+                               "else<br />" +
+                               "{<br />" +
+                               "&nbsp;&nbsp;byte[] outdata = System.Text.Encoding.Default.GetBytes(html2);<br />" +
+                               "&nbsp;&nbsp;_sink.Write(outdata, 0, outdata.GetLength(0));<br />" +
+                               "}<br />" +
+                           "</code>" +
+                        "</p>" +
+                        "<p>" +
+                           "Now my HTML minification was working againg... The above code was not my final code as there is a problem with the" +
+                           "hardcoded size of the <code>tempBytes</code> byte array. Furthermore when looking around to find a solution to the" +
+                           "above problem I also found people describing another problem with my current code: For larger HTML pages the " +
+                           "<code>WhitespaceFilter.Write</code> will be called multiple times each with a part of the total page. I wrote a " +
+                           "couple of classes that helped me solve this problem and the problem with the hard coded size of the byte array. I hope " +
+                           "to find time to write about them in a future post." +
+                        "</p>" +
+                        "<p>" +
+                           "There is another optimization that could be made here but I am not really sure how to do it... anyway it seems rather" +
+                           "silly that the HTML is first gzipped, then unzipped and minified, before it is gzipped again. If I could find a way" +
+                           "to disable gzipping of just HTML, then I could skip the unzip step in the above code as well and just gzip the result." +
+                           "Perhaps I will make a future blog post about that also if I figure out how." +
+                        "</p>"
+            }
+        };
+
+        #endregion Data
+
+        public BlogPost Get(string id)
+        {
+            return posts.Where(p => p.Id == id).FirstOrDefault();
+        }
+
+        public IEnumerable<BlogPost> GetAll()
+        {
+            return posts;
+        }
+
+        public void Add(BlogPost post)
+        {
+            posts.Add(post);
+        }
+
+        public void Update(BlogPost post)
+        {
+            BlogPost oldPost = Get(post.Id);
+            if (oldPost != null)
+                posts.Remove(oldPost);
+            posts.Add(post);
+        }
+
+        public IEnumerable<TagCount> GetAllTags()
+        {
+            Dictionary<string, TagCount> dicTags = new Dictionary<string, TagCount>();
+
+            foreach (string tag in posts.SelectMany(p => p.Tags))
+            {
+                TagCount tagCount;
+                if (dicTags.TryGetValue(tag, out tagCount))
+                {
+                    tagCount.Count++;
+                }
+                else
+                {
+                    dicTags.Add(tag, new TagCount { Count = 1, Tag = tag });
+                }
+            }
+            return dicTags.Values.OrderBy(tc => tc.Tag);
+        }
+
+        public IEnumerable<BlogPost> GetByTag(string tag)
+        {
+            return posts.Where(p => p.Tags.Contains(tag));
+        }
+    }
+}
