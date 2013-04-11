@@ -43,5 +43,11 @@ namespace Blog.Controllers
 
             return View();
         }
+
+        [ChildActionOnly]
+        public ActionResult TagsList()
+        {
+            return PartialView("_TagsListPartial", blogPostRepository.GetAllTags());
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿@using Blog.Models;
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -64,19 +63,7 @@
                 @RenderBody()
             </div>
             <aside class="span2">
-                <h3>Tags</h3>
-                @*                <p>
-                    Use this area to provide additional information.
-                </p>*@
-                <ul>
-                    @foreach (TagCount tc in ViewBag.Tags)
-                    {
-                        <li>@Html.ActionLink(tc.DisplayText, "Tag", "Blog", new { TagName = tc.Tag }, null)</li>
-                    }
-                    @*                    <li>@Html.ActionLink("Blog", "Index", "Blog")</li>
-                    <li>@Html.ActionLink("About", "About", "Blog")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
-                </ul>
+                @Html.Action("TagsList", "Blog")
             </aside>
         </div>
     </div>

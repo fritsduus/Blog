@@ -1,0 +1,10 @@
+﻿@model IEnumerable<Blog.Models.TagCount>
+
+<h3>Tags</h3>
+<ul>
+    @foreach (Blog.Models.TagCount tc in Model)
+    {
+        <li>@Html.ActionLink(tc.DisplayText, "Tag", "Blog", new { TagName = tc.Tag }, null)</li>
+    }
+</ul>
+
