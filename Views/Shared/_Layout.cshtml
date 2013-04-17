@@ -32,8 +32,17 @@
 
 <body>
     <div class="container-fluid">
-        <h1 class="text-info text-center">Frits Duus</h1>
-        <h2 class="text-info text-center">Pragmatic software development</h2>
+        <div class="row-fluid">
+            <div class="span10">
+                <h1 class="text-info text-center">Frits Duus</h1>
+                <h2 class="text-info text-center">Pragmatic software development</h2>
+            </div>
+            <div class="span2">
+                <section id="login" class="text-right">
+                    @Html.Partial("_LoginPartial")
+                </section>
+            </div>
+        </div>
         <div class="navbar navbar-inverse">
             <div class="navbar-inner">
                 <div class="container">
