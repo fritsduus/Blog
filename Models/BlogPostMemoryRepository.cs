@@ -182,7 +182,8 @@ namespace Blog.Models
 
         public BlogPost Get(string id)
         {
-            return posts.Where(p => p.Id == id).FirstOrDefault();
+            BlogPost post = posts.Where(p => p.Id == id).FirstOrDefault();
+            return post;
         }
 
         public IEnumerable<BlogPost> GetAll()

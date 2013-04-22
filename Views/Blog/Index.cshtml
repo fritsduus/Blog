@@ -27,6 +27,10 @@
         <div class="row-fluid">
             <div class="span9">
                 <h2>@Html.DisplayFor(modelItem => item.Title)</h2>
+                @if (Request.IsAuthenticated)
+                {
+                    @Html.ActionLink(".", "Edit", new { id = item.Id.Replace("BlogPost/", "") }, new { @class = "icon-pencil" })
+                }
             </div>
             <div class="span3 text-right">
                 <p>@Html.DisplayFor(modelItem => item.Created)</p>

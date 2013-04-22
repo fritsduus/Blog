@@ -30,6 +30,24 @@ namespace Blog.Controllers
             return View("Index", blogPostRepository.GetByTag(tagName).OrderByDescending(b => b.Created));
         }
 
+        //[Authorize(Roles="Editor")]
+        public ActionResult Edit(string id)
+        {
+            BlogPost blogPost = blogPostRepository.Get("BlogPost/" + id);
+            return View(blogPost);
+        }
+
+        [HttpPost]
+        //[Authorize(Roles = "Editor")]
+        public ActionResult Edit(BlogPost blogPost)
+        {
+            if (ModelState.IsValid)
+            {
+                blogPostRepository.Update(blogPost);
+            }
+            return View(blogPost);
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Who am I ?";

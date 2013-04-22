@@ -1,0 +1,67 @@
+﻿@model Blog.Models.BlogPost
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+@section Styles {
+}
+
+<h2>Edit</h2>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>BlogPost</legend>
+
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Created)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Created)
+            @Html.ValidationMessageFor(model => model.Created)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PublishTime)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.PublishTime)
+            @Html.ValidationMessageFor(model => model.PublishTime)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Title)
+        </div>
+        <div class="editor-field">
+@*            @Html.EditorFor(model => model.Title, new { @class="input-block-level" })*@
+            @Html.TextBoxFor(model => model.Title, new { @class="input-block-level" })
+            @Html.ValidationMessageFor(model => model.Title)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Text)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Text, new { @class="input-block-level" })
+@*            @Html.TextAreaFor(model => model.Text, new { @class="input-block-level", rows="10" })*@
+            @Html.ValidationMessageFor(model => model.Text)
+        </div>
+
+        <p>
+            <input type="submit" value="Save" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
